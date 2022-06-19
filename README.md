@@ -125,7 +125,7 @@ export default MyComponent;
 
 ## Documentation
 
-```typescript jsx
+```typescript
 type createStackContext = <
   C extends React.ComponentType<StackComponentProps>,
   P = C extends React.ComponentType<StackComponentProps<infer I>> ? I : never,
