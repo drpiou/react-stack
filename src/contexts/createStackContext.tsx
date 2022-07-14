@@ -1,7 +1,7 @@
 import { useStateSafe, useTimeout } from '@drpiou/react-utils';
 import filter from 'lodash/filter';
 import uniqueId from 'lodash/uniqueId';
-import React from 'react';
+import React, { ComponentType, ContextType, createContext, PropsWithChildren, useCallback, useContext } from 'react';
 
 export type StackProviderProps = {
   defaultDuration?: number;
@@ -32,26 +32,26 @@ export type StackComponentProps<S = unknown> = {
 export type ShowStackItem<O = unknown> = (options: Omit<O, keyof StackItemBase>) => StackItemRef;
 
 const createStackContext = <
-  C extends React.ComponentType<StackComponentProps>,
-  P = C extends React.ComponentType<StackComponentProps<infer I>> ? I : never,
+  C extends ComponentType<StackComponentProps>,
+  P = C extends ComponentType<StackComponentProps<infer I>> ? I : never,
 >(
-  Component: React.ComponentType<StackComponentProps<P>>,
+  Component: ComponentType<StackComponentProps<P>>,
   contextOptions: StackContextOptions,
 ): [typeof useCtx, typeof Provider] => {
-  const ctx = React.createContext<{
+  const ctx = createContext<{
     show: ShowStackItem<P>;
   }>({
     show: () => ({ hide: () => undefined }),
   });
 
-  const Provider = (props: React.PropsWithChildren<StackProviderProps>): JSX.Element => {
+  const Provider = (props: PropsWithChildren<StackProviderProps>): JSX.Element => {
     const { defaultDuration, children } = props;
 
     const timeout = useTimeout();
 
     const [stack, setStack] = useStateSafe<StackItem<P>[]>([]);
 
-    const show: ShowStackItem<P> = React.useCallback(
+    const show: ShowStackItem<P> = useCallback(
       (options) => {
         const stackItemId = uniqueId('stack-item:');
 
@@ -85,8 +85,8 @@ const createStackContext = <
     );
   };
 
-  const useCtx = (): React.ContextType<typeof ctx> => {
-    const c = React.useContext(ctx);
+  const useCtx = (): ContextType<typeof ctx> => {
+    const c = useContext(ctx);
 
     if (c === undefined) {
       throw new Error("Couldn't find a context object. Is your component inside StackProvider?");
