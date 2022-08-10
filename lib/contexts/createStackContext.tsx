@@ -1,14 +1,29 @@
 import { useStateSafe, useTimeout } from '@drpiou/react-utils';
 import filter from 'lodash/filter';
 import uniqueId from 'lodash/uniqueId';
-import React, { ComponentType, ContextType, createContext, PropsWithChildren, useCallback, useContext } from 'react';
+import React, {
+  ComponentType,
+  ContextType,
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 
-export type StackProviderProps = {
+export type StackProviderProps<P> = {
   defaultDuration?: number;
+  onRef?: (ref: StackRef<P>) => void;
 };
 
 export type StackContextOptions = {
   defaultDuration: number;
+};
+
+export type StackRef<P> = {
+  show: ShowStackItem<P>;
 };
 
 export type StackItemBase = {
@@ -44,10 +59,14 @@ const createStackContext = <
     show: () => ({ hide: () => undefined }),
   });
 
-  const Provider = (props: PropsWithChildren<StackProviderProps>): JSX.Element => {
-    const { defaultDuration, children } = props;
+  const Provider = (props: PropsWithChildren<StackProviderProps<P>>): JSX.Element => {
+    const { defaultDuration, onRef, children } = props;
 
     const timeout = useTimeout();
+
+    const handleRef = useRef(onRef);
+
+    handleRef.current = onRef;
 
     const [stack, setStack] = useStateSafe<StackItem<P>[]>([]);
 
@@ -76,8 +95,16 @@ const createStackContext = <
       [defaultDuration, setStack, timeout],
     );
 
+    const ref = useMemo(() => {
+      return { show };
+    }, [show]);
+
+    useEffect(() => {
+      handleRef.current?.(ref);
+    }, [ref]);
+
     return (
-      <ctx.Provider value={{ show }}>
+      <ctx.Provider value={ref}>
         {children}
 
         <Component stack={stack} />

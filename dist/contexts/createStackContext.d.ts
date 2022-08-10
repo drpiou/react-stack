@@ -1,9 +1,13 @@
 import React, { ComponentType, ContextType, PropsWithChildren } from 'react';
-export declare type StackProviderProps = {
+export declare type StackProviderProps<P> = {
     defaultDuration?: number;
+    onRef?: (ref: StackRef<P>) => void;
 };
 export declare type StackContextOptions = {
     defaultDuration: number;
+};
+export declare type StackRef<P> = {
+    show: ShowStackItem<P>;
 };
 export declare type StackItemBase = {
     id: string;
@@ -21,5 +25,5 @@ export declare type StackComponentProps<S = unknown> = {
 export declare type ShowStackItem<O = unknown> = (options: Omit<O, keyof StackItemBase>) => StackItemRef;
 declare const createStackContext: <C extends React.ComponentType<StackComponentProps<unknown>>, P = C extends React.ComponentType<StackComponentProps<infer I>> ? I : never>(Component: React.ComponentType<StackComponentProps<P>>, contextOptions: StackContextOptions) => [() => {
     show: ShowStackItem<P>;
-}, (props: PropsWithChildren<StackProviderProps>) => JSX.Element];
+}, (props: React.PropsWithChildren<StackProviderProps<P>>) => JSX.Element];
 export default createStackContext;

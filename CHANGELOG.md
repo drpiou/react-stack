@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - CHANGELOG.md
 
+### Changed
+
+- internal changes
+
 ## [0.0.1] - 2022-06-19
 
 ### Added

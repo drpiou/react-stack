@@ -1,8 +1,8 @@
 # `@drpiou/react-stack`
 
-![GitHub](https://img.shields.io/github/license/drpiou/react-stack)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/drpiou/react-stack)
-![Jest tests](https://img.shields.io/badge/stage-experimental-important)
+![Licence](https://img.shields.io/github/license/drpiou/react-stack)
+![Package.json version](https://img.shields.io/github/package-json/v/drpiou/react-stack)
+![Stage](https://img.shields.io/badge/stage-experimental-important)
 
 The `@drpiou/react-stack` package creates a React stack context (usually used to create notifications and toasts).
 
