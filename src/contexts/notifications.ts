@@ -1,4 +1,4 @@
-import { createStackContext, StackComponentProps, StackItem, StackItemRef, StackOptions } from '../../lib';
+import { createStackContext, StackItem, StackOptions } from '../../lib';
 import Notifications from '../Notifications';
 
 export type NotificationType = 'default' | 'info' | 'success' | 'warning' | 'error';
@@ -12,10 +12,6 @@ export type NotificationOptions = StackOptions<{
 }>;
 
 export type Notification = StackItem<NotificationOptions>;
-
-export type NotificationRef = StackItemRef;
-
-export type NotificationsComponentProps = StackComponentProps<Notification>;
 
 export const [useNotification, NotificationProvider] = createStackContext(Notifications, {
   defaultDuration: 3000,

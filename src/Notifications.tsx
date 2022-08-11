@@ -1,8 +1,9 @@
 import React from 'react';
 import './Notifications.css';
-import { NotificationsComponentProps } from './contexts/notifications';
+import { StackComponentProps } from '../lib';
+import { Notification } from './contexts/notifications';
 
-const Notifications = (props: NotificationsComponentProps): JSX.Element => {
+const Notifications = (props: StackComponentProps<Notification>): JSX.Element => {
   const { stack } = props;
 
   return (

@@ -1,8 +1,9 @@
 import React from 'react';
 import './Toasts.css';
-import { ToastsComponentProps } from './contexts/toasts';
+import { StackComponentProps } from '../lib';
+import { Toast } from './contexts/toasts';
 
-const Toasts = (props: ToastsComponentProps): JSX.Element => {
+const Toasts = (props: StackComponentProps<Toast>): JSX.Element => {
   const { stack } = props;
 
   return (
