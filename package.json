@@ -1,6 +1,6 @@
 {
   "name": "@drpiou/react-stack",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Creates a React stack context.",
   "keywords": [],
   "author": "Alex <hello@drpiou.dev>",
