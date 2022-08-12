@@ -1,3 +1,4 @@
+import { log } from '@drpiou/ts-utils';
 import React from 'react';
 import './App.css';
 import { NotificationProvider, NotificationRef, useNotification } from './contexts/notifications';
@@ -7,11 +8,11 @@ import Toasts from './components/Toasts';
 
 const App = (): JSX.Element => {
   const handleNotificationsRef = (ref: NotificationRef): void => {
-    console.log('NotificationProvider@onRef: ', ref);
+    log('NotificationProvider@onRef: ', ref);
   };
 
   const handleToastsRef = (ref: ToastRef): void => {
-    console.log('ToastProvider@onRef: ', ref);
+    log('ToastProvider@onRef: ', ref);
   };
 
   return (
