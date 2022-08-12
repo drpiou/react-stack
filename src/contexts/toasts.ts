@@ -1,5 +1,4 @@
-import { createStackContext, StackItem, StackOptions } from '../../lib';
-import Toasts from '../Toasts';
+import { createStackContext, StackItem, StackOptions, StackRef } from '../../lib';
 
 export type ToastType = 'default' | 'info' | 'success' | 'warning' | 'error';
 
@@ -13,6 +12,8 @@ export type ToastOptions = StackOptions<{
 
 export type Toast = StackItem<ToastOptions>;
 
-export const [useToast, ToastProvider] = createStackContext(Toasts, {
+export type ToastRef = StackRef<ToastOptions>;
+
+export const [useToast, ToastProvider] = createStackContext<ToastOptions>({
   defaultDuration: 3000,
 });

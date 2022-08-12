@@ -1,12 +1,22 @@
 import React from 'react';
 import './App.css';
-import { NotificationProvider, useNotification } from './contexts/notifications';
-import { ToastProvider, useToast } from './contexts/toasts';
+import { NotificationProvider, NotificationRef, useNotification } from './contexts/notifications';
+import { ToastProvider, ToastRef, useToast } from './contexts/toasts';
+import Notifications from './components/Notifications';
+import Toasts from './components/Toasts';
 
 const App = (): JSX.Element => {
+  const handleNotificationsRef = (ref: NotificationRef): void => {
+    console.log('NotificationProvider@onRef: ', ref);
+  };
+
+  const handleToastsRef = (ref: ToastRef): void => {
+    console.log('ToastProvider@onRef: ', ref);
+  };
+
   return (
-    <NotificationProvider onRef={console.log}>
-      <ToastProvider onRef={console.log}>
+    <NotificationProvider Component={Notifications} onRef={handleNotificationsRef}>
+      <ToastProvider Component={Toasts} onRef={handleToastsRef}>
         <ThingNotification />
         <ThingToast />
       </ToastProvider>

@@ -244,6 +244,10 @@
   version "0.0.2"
   resolved "https://github.com/drpiou/react-utils.git#9a4e0c2918c9917539d98d28a8f6237a492e3643"
 
+"@drpiou/ts-utils@https://github.com/drpiou/ts-utils.git#hotfix/vite-integration":
+  version "0.0.3"
+  resolved "https://github.com/drpiou/ts-utils.git#c387c0a23df893a24ffc9db9700e4547368b7a27"
+
 "@esbuild/linux-loong64@0.14.53":
   version "0.14.53"
   resolved "https://registry.yarnpkg.com/@esbuild/linux-loong64/-/linux-loong64-0.14.53.tgz#251b4cd6760fadb4d68a05815e6dc5e432d69cd6"

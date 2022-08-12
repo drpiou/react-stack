@@ -13,54 +13,46 @@ import React, {
   useRef,
 } from 'react';
 
-export type StackProviderProps<P> = {
-  defaultDuration?: number;
-  onRef?: (ref: StackRef<P>) => void;
-};
-
 export type StackContextOptions = {
-  defaultDuration: number;
+  defaultDuration?: number;
 };
 
-export type StackRef<P> = {
-  show: ShowStackItem<P>;
+export type StackProviderProps<O extends StackOptions> = StackContextOptions & {
+  Component: ComponentType<StackComponentProps<StackItem<O>>>;
+  onRef?: (ref: StackRef<O>) => void;
 };
 
-export type StackItemBase = {
-  id: string;
+export type StackRef<O extends StackOptions> = {
+  show: ShowStackItem<O>;
+  hideAll: () => void;
 };
 
-export type StackOptions<P = unknown> = P & {
+export type StackOptions<O = unknown> = O & {
   duration?: number;
 };
 
-export type StackItem<P = unknown> = P & StackOptions<StackItemBase>;
+export type StackItem<O = unknown> = StackOptions<O> & {
+  id: string;
+};
 
 export type StackItemRef = {
   hide: () => void;
 };
 
-export type StackComponentProps<S = unknown> = {
-  stack: S[];
+export type StackComponentProps<I extends StackItem> = {
+  stack: I[];
 };
 
-export type ShowStackItem<O = unknown> = (options: Omit<O, keyof StackItemBase>) => StackItemRef;
+export type ShowStackItem<O extends StackOptions> = (options: O) => StackItemRef;
 
-const createStackContext = <
-  C extends ComponentType<StackComponentProps>,
-  P = C extends ComponentType<StackComponentProps<infer I>> ? I : never,
->(
-  Component: ComponentType<StackComponentProps<P>>,
-  contextOptions: StackContextOptions,
-): [typeof useCtx, typeof Provider] => {
-  const ctx = createContext<{
-    show: ShowStackItem<P>;
-  }>({
+const createStackContext = <O extends StackOptions>(contextOptions: StackContextOptions): [typeof useCtx, typeof Provider] => {
+  const ctx = createContext<StackRef<O>>({
     show: () => ({ hide: () => undefined }),
+    hideAll: () => undefined,
   });
 
-  const Provider = (props: PropsWithChildren<StackProviderProps<P>>): JSX.Element => {
-    const { defaultDuration, onRef, children } = props;
+  const Provider = (props: PropsWithChildren<StackProviderProps<O>>): JSX.Element => {
+    const { Component, defaultDuration, onRef, children } = props;
 
     const timeout = useTimeout();
 
@@ -68,13 +60,13 @@ const createStackContext = <
 
     handleRef.current = onRef;
 
-    const [stack, setStack] = useStateSafe<StackItem<P>[]>([]);
+    const [stack, setStack] = useStateSafe<StackItem<O>[]>([]);
 
-    const show: ShowStackItem<P> = useCallback(
+    const show: ShowStackItem<O> = useCallback(
       (options) => {
         const stackItemId = uniqueId('stack-item:');
 
-        const stackItem = { ...options, id: stackItemId } as StackItem<P>;
+        const stackItem: StackItem<O> = { ...options, id: stackItemId };
 
         setStack((oldStack) => [...oldStack, stackItem]);
 
@@ -86,8 +78,10 @@ const createStackContext = <
           });
         };
 
-        if (stackItem.duration !== 0) {
-          timeout.set(hide, stackItem.duration ?? defaultDuration ?? contextOptions.defaultDuration);
+        const duration = stackItem.duration ?? defaultDuration ?? contextOptions.defaultDuration;
+
+        if (duration) {
+          timeout.set(hide, duration);
         }
 
         return { hide };
@@ -95,9 +89,13 @@ const createStackContext = <
       [defaultDuration, setStack, timeout],
     );
 
+    const hideAll = useCallback((): void => {
+      setStack(() => []);
+    }, [setStack]);
+
     const ref = useMemo(() => {
-      return { show };
-    }, [show]);
+      return { show, hideAll };
+    }, [show, hideAll]);
 
     useEffect(() => {
       handleRef.current?.(ref);

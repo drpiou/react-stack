@@ -1,29 +1,29 @@
 import React, { ComponentType, ContextType, PropsWithChildren } from 'react';
-export declare type StackProviderProps<P> = {
-    defaultDuration?: number;
-    onRef?: (ref: StackRef<P>) => void;
-};
 export declare type StackContextOptions = {
-    defaultDuration: number;
+    defaultDuration?: number;
 };
-export declare type StackRef<P> = {
-    show: ShowStackItem<P>;
+export declare type StackProviderProps<O extends StackOptions> = StackContextOptions & {
+    Component: ComponentType<StackComponentProps<StackItem<O>>>;
+    onRef?: (ref: StackRef<O>) => void;
 };
-export declare type StackItemBase = {
-    id: string;
+export declare type StackRef<O extends StackOptions> = {
+    show: ShowStackItem<O>;
+    hideAll: () => void;
 };
-export declare type StackOptions<P = unknown> = P & {
+export declare type StackOptions<O = unknown> = O & {
     duration?: number;
 };
-export declare type StackItem<P = unknown> = P & StackOptions<StackItemBase>;
+export declare type StackItem<O = unknown> = StackOptions<O> & {
+    id: string;
+};
 export declare type StackItemRef = {
     hide: () => void;
 };
-export declare type StackComponentProps<S = unknown> = {
-    stack: S[];
+export declare type StackComponentProps<I extends StackItem> = {
+    stack: I[];
 };
-export declare type ShowStackItem<O = unknown> = (options: Omit<O, keyof StackItemBase>) => StackItemRef;
-declare const createStackContext: <C extends React.ComponentType<StackComponentProps<unknown>>, P = C extends React.ComponentType<StackComponentProps<infer I>> ? I : never>(Component: React.ComponentType<StackComponentProps<P>>, contextOptions: StackContextOptions) => [() => {
-    show: ShowStackItem<P>;
-}, (props: React.PropsWithChildren<StackProviderProps<P>>) => JSX.Element];
+export declare type ShowStackItem<O extends StackOptions> = (options: O) => StackItemRef;
+declare const createStackContext: <O extends {
+    duration?: number | undefined;
+}>(contextOptions: StackContextOptions) => [() => StackRef<O>, (props: React.PropsWithChildren<StackProviderProps<O>>) => JSX.Element];
 export default createStackContext;
