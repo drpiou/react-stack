@@ -1,24 +1,14 @@
 import { useStateSafe, useTimeout } from '@drpiou/react-utils';
 import filter from 'lodash/filter';
 import uniqueId from 'lodash/uniqueId';
-import React, {
-  ComponentType,
-  ContextType,
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
 export type StackContextOptions = {
   defaultDuration?: number;
 };
 
 export type StackProviderProps<O extends StackOptions> = StackContextOptions & {
-  Component: ComponentType<StackComponentProps<StackItem<O>>>;
+  Component: React.ComponentType<StackComponentProps<StackItem<O>>>;
   onRef?: (ref: StackRef<O>) => void;
 };
 
@@ -51,7 +41,7 @@ const createStackContext = <O extends StackOptions>(contextOptions: StackContext
     hideAll: () => undefined,
   });
 
-  const Provider = (props: PropsWithChildren<StackProviderProps<O>>): JSX.Element => {
+  const Provider = (props: React.PropsWithChildren<StackProviderProps<O>>): JSX.Element => {
     const { Component, defaultDuration, onRef, children } = props;
 
     const timeout = useTimeout();
@@ -110,7 +100,7 @@ const createStackContext = <O extends StackOptions>(contextOptions: StackContext
     );
   };
 
-  const useCtx = (): ContextType<typeof ctx> => {
+  const useCtx = (): React.ContextType<typeof ctx> => {
     const c = useContext(ctx);
 
     if (c === undefined) {

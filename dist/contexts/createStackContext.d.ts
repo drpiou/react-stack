@@ -1,9 +1,9 @@
-import React, { ComponentType, ContextType, PropsWithChildren } from 'react';
+import React from 'react';
 export declare type StackContextOptions = {
     defaultDuration?: number;
 };
 export declare type StackProviderProps<O extends StackOptions> = StackContextOptions & {
-    Component: ComponentType<StackComponentProps<StackItem<O>>>;
+    Component: React.ComponentType<StackComponentProps<StackItem<O>>>;
     onRef?: (ref: StackRef<O>) => void;
 };
 export declare type StackRef<O extends StackOptions> = {
