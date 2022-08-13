@@ -31,17 +31,15 @@ yarn add @drpiou/react-stack
 
 ## Example
 
-### `contexts/notifications/index.tsx`
+### `contexts/notifications.ts`
 
-```typescript jsx
+```typescript
 import {
   createStackContext,
-  StackComponentProps,
   StackItem,
-  StackItemRef,
   StackOptions,
+  StackRef,
 } from '@drpiou/react-stack';
-import Notifications from '../../components/Notifications';
 
 export type NotificationType =
   | 'default'
@@ -60,25 +58,27 @@ export type NotificationOptions = StackOptions<{
 
 export type Notification = StackItem<NotificationOptions>;
 
-export type NotificationRef = StackItemRef;
+export type NotificationRef = StackRef<NotificationOptions>;
 
-export type NotificationsComponentProps = StackComponentProps<Notification>;
-
-export const [useNotification, NotificationProvider] = createStackContext(
-  Notifications,
-  {
+export const [useNotification, NotificationProvider] =
+  createStackContext<NotificationOptions>({
     defaultDuration: 3000,
-  },
-);
+  });
 ```
 
 ### `App.tsx`
 
 ```typescript jsx
+import MyComponent from './components/MyComponent';
+import Notifications from './components/Notifications';
 import { NotificationProvider } from './contexts/notifications';
 
 const App = (): JSX.Element => {
-  return <NotificationProvider>{/* ... */}</NotificationProvider>;
+  return (
+    <NotificationProvider Component={Notifications} onRef={console.log}>
+      <MyComponent />
+    </NotificationProvider>
+  );
 };
 
 export default App;
@@ -87,9 +87,13 @@ export default App;
 ### `components/Notifications/index.tsx`
 
 ```typescript jsx
-import { NotificationsComponentProps } from '../../contexts/notifications';
+import React from 'react';
+import { StackComponentProps } from '@drpiou/react-stack';
+import { Notification } from '../contexts/notifications';
 
-const Notifications = (props: NotificationsComponentProps): JSX.Element => {
+const Notifications = (
+  props: StackComponentProps<Notification>,
+): JSX.Element => {
   const { stack } = props;
 
   return (
@@ -110,13 +114,17 @@ export default Notifications;
 import { useNotifications } from '../../contexts/notifications';
 
 const MyComponent = (): JSX.Element => {
-  const notifications = useNotifications();
+  const notifications = useNotification();
 
-  const handlePress = (): void => {
+  const handleClick = (): void => {
     notifications.show({ text: 'hello' });
   };
 
-  return <div onClick={handlePress} />;
+  return (
+    <div>
+      <button onClick={handleClick}>notification</button>
+    </div>
+  );
 };
 
 export default MyComponent;
@@ -125,42 +133,43 @@ export default MyComponent;
 ## Documentation
 
 ```typescript
-type createStackContext = <
-  C extends React.ComponentType<StackComponentProps>,
-  P = C extends React.ComponentType<StackComponentProps<infer I>> ? I : never,
->(
-  Component: React.ComponentType<StackComponentProps<P>>,
-) => [useStack<P>, StackProvider];
+export type createStackContext = <O extends StackOptions>(
+  contextOptions: StackContextOptions,
+) => [useStack<O>, React.ComponentType<StackProviderProps<O>>];
 
-type useStack<P> = () => {
-  show: ShowStackItem<P>;
+export type useStack<O> = () => StackRef<O>;
+
+export type StackContextOptions = {
+  defaultDuration?: number;
 };
 
-type StackProvider = (props: StackProviderProps) => JSX.Element;
-
-type StackProviderProps = {
-  defaultDuration?: number; // default: 3000
+export type StackProviderProps<O extends StackOptions> = StackContextOptions & {
+  Component: React.ComponentType<StackComponentProps<StackItem<O>>>;
+  onRef?: (ref: StackRef<O>) => void;
 };
 
-type ShowStackItem<O = unknown> = (
-  options: Omit<O, keyof StackItemBase>,
-) => StackItemRef;
-
-type StackItemRef = {
-  hide: () => void;
+export type StackRef<O extends StackOptions> = {
+  show: ShowStackItem<O>;
+  hideAll: () => void;
 };
 
-type StackItemBase = {
-  id: string;
-};
-
-type StackOptions<P = unknown> = P & {
+export type StackOptions<O = unknown> = O & {
   duration?: number;
 };
 
-type StackItem<P = unknown> = P & StackOptions<StackItemBase>;
-
-type StackComponentProps<S = unknown> = {
-  stack: S[];
+export type StackItem<O = unknown> = StackOptions<O> & {
+  id: string;
 };
+
+export type StackItemRef = {
+  hide: () => void;
+};
+
+export type StackComponentProps<I extends StackItem> = {
+  stack: I[];
+};
+
+export type ShowStackItem<O extends StackOptions> = (
+  options: O,
+) => StackItemRef;
 ```
